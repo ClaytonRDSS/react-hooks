@@ -1,46 +1,33 @@
 import React, { useState, useEffect } from "react";
 
-
+//Event list: (ouvir a localização, e altera o estado a partir da da localização).
 export function App() {
 
-  const [repositories, setRepositories] = useState([]);
+  const [location, setLocation] = useState({});
 
-  //hook: listagem de repositorios do GitHub.
-  useEffect(async () => {
-    const response = await fetch('https://github.com/clayton033?tab=repositories');
-    const data = await response.json();
-
-    setRepositories(data);
-  }, []);
-
-  //hook: mostrar na taq title o numero de repos marcado como favoritos.
+  //hook: monitorar a localizaçõa do usuario.
   useEffect(() => {
-    const filtered = repositories.filter(repo => repo.favorite)
-    document.title = `Você tem ${filtered.length} Favoritos`
-    
-  }, [repositories])
+    //navigator.geolocation.watchPosition(handlePositionReceived);
 
-  // function para favoritar um repositorio.
-  function handleFavorite(id) {
-    const newRepositories = repositories.map(repo => {
-      return repo.id === id ? { ...repo } : { ...repo, favorite: true };
-    })
-    setRepositories(newRepositories);
+    const watchId = navigator.geolocation.watchPosition(handlePositionReceived);
+
+    return () => navigator.geolocation.clearWatch(watchId);
+
+  }, [])
+
+  //function para capturar a localização do usuário
+  function handlePositionReceived({coords}) {
+   //console.log(coordinates);
+   const {latitude, longitude} = coords;
+
+   setLocation({latitude, longitude});
   }
 
+  //retorno da localização
   return (
     <>
-      <ul>
-        {repositories.map(repo => (
-          <li key={repo.id}>
-            {repo.name}
-            {repo.favorite && <span>(Favorito)</span>}
-            <button onClick={() => handleFavorite(repo.id)}>
-              Favoritar
-            </button>
-          </li>
-        ))}
-      </ul>
+      Latitude: {location.latitude} <br />
+      Longitude: {location.longitude}
     </>
   );
 }
