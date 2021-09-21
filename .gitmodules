@@ -1,0 +1,3 @@
+[submodule "react-hook"]
+	path = react-hook
+	url = https://github.com/clayton033/react-hooks.git
